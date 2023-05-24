@@ -96,7 +96,7 @@ class Resnet(nn.Module):
         return x
     
 
-def resnet():
+def resnet(num_classes=10):
     block = ResidualBlock
-    model = Resnet(5, block)
+    model = Resnet(5, block, num_classes)
     return model
