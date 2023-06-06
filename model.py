@@ -7,23 +7,23 @@ class IdentityPadding(nn.Module):
         # self.pooling = nn.MaxPool2d(1, stride=stride)
         # self.add_channels = out_channels - in_channels
         self.conv = nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=stride, bias=False)
-        self.bn = nn.BatchNorm2d(out_channels)
+        # self.bn = nn.BatchNorm2d(out_channels)
     
     def forward(self, x):
         # out = F.pad(x, (0,0,0,0,0,self.add_channels))
         # out = self.pooling(out)
         out = self.conv(x)
-        out = self.bn(x)
+        # out = self.bn(x)
         return out
 
 class ResidualBlock(nn.Module):
     def __init__(self, in_channels, out_channels, stride=1, down_sample=False):
         super(ResidualBlock, self).__init__()
         self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=stride, padding=1, bias=False)
-        self.bn1 = nn.BatchNorm2d(out_channels)
+        # self.bn1 = nn.BatchNorm2d(out_channels)
         self.relu = nn.ReLU(inplace=True)
         self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1, bias=False)
-        self.bn2 = nn.BatchNorm2d(out_channels)
+        # self.bn2 = nn.BatchNorm2d(out_channels)
 
         if down_sample:
             self.down_sample = IdentityPadding(in_channels, out_channels, stride)
@@ -34,10 +34,10 @@ class ResidualBlock(nn.Module):
         shortcut = x
 
         out = self.conv1(x)
-        out = self.bn1(out)
+        # out = self.bn1(out)
         out = self.relu(out)
         out = self.conv2(out)
-        out = self.bn2(out)
+        # out = self.bn2(out)
 
         if self.down_sample is not None:
             shortcut = self.down_sample(x)
@@ -51,7 +51,7 @@ class Resnet(nn.Module):
         super(Resnet, self).__init__()
         self.num_layers = num_layers
         self.conv1 = nn.Conv2d(in_channels=3, out_channels=16, kernel_size=3, stride=1, padding=1, bias=False)
-        self.bn1 = nn.BatchNorm2d(16)
+        # self.bn1 = nn.BatchNorm2d(16)
         self.relu1 = nn.ReLU(inplace=True)
 
         self.layer_2n = self.get_layers(block, in_channels=16, out_channels=16, stride=1)
@@ -59,7 +59,7 @@ class Resnet(nn.Module):
         self.layer_6n = self.get_layers(block, in_channels=32, out_channels=64, stride=2)
 
         self.avg_pool = nn.AvgPool2d(kernel_size=8, stride=1)
-        self.fc_out = nn.Linear(64, num_classes)
+        self.fc_out = nn.Linear(5184, num_classes)
 
         for m in self.modules():
           if isinstance(m, nn.Conv2d):
@@ -85,7 +85,7 @@ class Resnet(nn.Module):
 
     def forward(self, x):
         x = self.conv1(x)
-        x = self.bn1(x)
+        # x = self.bn1(x)
         x = self.relu1(x)
         x = self.layer_2n(x)
         x = self.layer_4n(x)
